@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Calendario D&D</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>🎲 Calendario de partidas</h1>
+
+        <div class="player-selector">
+            <label for="player">¿Quién eres?</label>
+
+            <select id="player">
+                <option value="">Selecciona tu nombre</option>
+            </select>
+        </div>
+
+        <div class="calendar-header">
+
+            <button id="previousMonth">‹</button>
+
+            <h2 id="monthTitle"></h2>
+
+            <button id="nextMonth">›</button>
+
+        </div>
+
+        <div class="calendar">
+
+            <div class="day-name">L</div>
+            <div class="day-name">M</div>
+            <div class="day-name">X</div>
+            <div class="day-name">J</div>
+            <div class="day-name">V</div>
+            <div class="day-name">S</div>
+            <div class="day-name">D</div>
+
+            <div id="calendarDays"></div>
+
+        </div>
+
+        <div class="legend">
+
+            <div>
+                <span class="legend-color available"></span>
+                Disponible
+            </div>
+
+            <div>
+                <span class="legend-color unavailable"></span>
+                No disponible
+            </div>
+
+            <div>
+                <span class="legend-color unknown"></span>
+                Sin responder
+            </div>
+
+        </div>
+
+        <div id="message"></div>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
