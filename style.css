@@ -1,0 +1,179 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111827;
+    color: white;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 25px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.player-selector {
+    max-width: 300px;
+    margin: 0 auto 30px;
+}
+
+.player-selector label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.calendar-header button {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 50%;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.day-name {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    color: #9ca3af;
+}
+
+#calendarDays {
+    display: contents;
+}
+
+.day {
+    min-height: 100px;
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.day:hover {
+    background: #374151;
+}
+
+.day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.day-number {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.player-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.availability-count {
+    font-size: 12px;
+    color: #d1d5db;
+    margin-top: 8px;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+    color: #d1d5db;
+    font-size: 14px;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.legend-color.available {
+    background: #22c55e;
+}
+
+.legend-color.unavailable {
+    background: #ef4444;
+}
+
+.legend-color.unknown {
+    background: #6b7280;
+}
+
+#message {
+    text-align: center;
+    margin-top: 20px;
+    color: #fbbf24;
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 12px;
+    }
+
+    .day {
+        min-height: 75px;
+        padding: 5px;
+    }
+
+    .day-number {
+        font-size: 14px;
+    }
+
+    .player-dot {
+        width: 9px;
+        height: 9px;
+    }
+
+    .availability-count {
+        font-size: 10px;
+    }
+}
