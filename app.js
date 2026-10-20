@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://dpujceghxgicemewqzip.supabase.co";
-const SUPABASE_KEY = "sb_publishable_MYANBWkTW5omiy9e2HWNhA_Hio6sQ1_";
+const SUPABASE_KEY = "sb_publishable_MYANBWkTW5omiy9e2HWNhA_Hio6s";
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
@@ -8,21 +8,23 @@ const supabaseClient = window.supabase.createClient(
 
 let players = [];
 let availability = {};
-
 let currentDate = new Date();
+let selectedDate = null;
 
 const playerSelect = document.getElementById("player");
 const calendarDays = document.getElementById("calendarDays");
 const monthTitle = document.getElementById("monthTitle");
 const message = document.getElementById("message");
 
+const dialog = document.getElementById("availabilityDialog");
+const statusInput = document.getElementById("availabilityStatus");
+const noteInput = document.getElementById("availabilityNote");
+const saveButton = document.getElementById("saveAvailability");
+const cancelButton = document.getElementById("cancelAvailability");
+const dialogDate = document.getElementById("dialogDate");
 
-// ===============================
-// CARGAR JUGADORES
-// ===============================
-
+// Cargar jugadores
 async function loadPlayers() {
-
     const { data, error } = await supabaseClient
         .from("players")
         .select("*")
@@ -30,47 +32,31 @@ async function loadPlayers() {
 
     if (error) {
         console.error(error);
-        showMessage("Error cargando jugadores");
+        showMessage("Error cargando jugadores.");
         return;
     }
 
-    players = data;
-
+    players = data || [];
     playerSelect.innerHTML =
         '<option value="">Selecciona tu nombre</option>';
 
     players.forEach(player => {
-
         const option = document.createElement("option");
-
         option.value = player.id;
         option.textContent = player.name;
-
         playerSelect.appendChild(option);
-
     });
 
     renderCalendar();
 }
 
-
-// ===============================
-// CARGAR DISPONIBILIDAD
-// ===============================
-
+// Cargar disponibilidad y anotaciones
 async function loadAvailability() {
-
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const start =
-        formatDate(firstDay);
-
-    const end =
-        formatDate(lastDay);
+    const start = formatDate(new Date(year, month, 1));
+    const end = formatDate(new Date(year, month + 1, 0));
 
     const { data, error } = await supabaseClient
         .from("availability")
@@ -80,327 +66,226 @@ async function loadAvailability() {
 
     if (error) {
         console.error(error);
-        showMessage("Error cargando disponibilidad");
+        showMessage("Error cargando disponibilidad.");
         return;
     }
 
     availability = {};
 
-    data.forEach(row => {
-
+    (data || []).forEach(row => {
         if (!availability[row.date]) {
             availability[row.date] = {};
         }
 
-        availability[row.date][row.player_id] =
-            row.available;
-
+        availability[row.date][row.player_id] = {
+            available: row.available,
+            note: row.note || ""
+        };
     });
 
     renderCalendar();
 }
 
-
-// ===============================
-// CREAR CALENDARIO
-// ===============================
-
+// Crear calendario
 function renderCalendar() {
-
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
-    const monthName =
-        currentDate.toLocaleDateString("es-ES", {
-            month: "long",
-            year: "numeric"
-        });
+    const monthName = currentDate.toLocaleDateString("es-ES", {
+        month: "long",
+        year: "numeric"
+    });
 
     monthTitle.textContent =
-        monthName.charAt(0).toUpperCase() +
-        monthName.slice(1);
+        monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
     calendarDays.innerHTML = "";
 
-    const firstDay =
-        new Date(year, month, 1);
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
-
-    // JavaScript empieza la semana en domingo.
-    // Nosotros queremos empezar en lunes.
-    let startingDay =
-        firstDay.getDay();
-
-    startingDay =
-        startingDay === 0 ? 6 : startingDay - 1;
-
-
-    // Espacios antes del día 1
+    let startingDay = firstDay.getDay();
+    startingDay = startingDay === 0 ? 6 : startingDay - 1;
 
     for (let i = 0; i < startingDay; i++) {
-
-        const empty =
-            document.createElement("div");
-
+        const empty = document.createElement("div");
         empty.className = "day empty";
-
         calendarDays.appendChild(empty);
     }
 
-
-    // Días del mes
-
     for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateString = formatDate(date);
 
-        const date =
-            new Date(year, month, day);
-
-        const dateString =
-            formatDate(date);
-
-        const dayElement =
-            document.createElement("div");
-
+        const dayElement = document.createElement("div");
         dayElement.className = "day";
 
-
-        const number =
-            document.createElement("div");
-
+        const number = document.createElement("div");
         number.className = "day-number";
-
         number.textContent = day;
-
         dayElement.appendChild(number);
 
-
-        const playersContainer =
-            document.createElement("div");
-
+        const playersContainer = document.createElement("div");
         playersContainer.className = "players";
-
 
         let availableCount = 0;
 
-
         players.forEach(player => {
-
-            const dot =
-                document.createElement("div");
-
+            const dot = document.createElement("div");
             dot.className = "player-dot";
 
-            const playerAvailability =
-                availability[dateString]?.[player.id];
-
+            const playerData = availability[dateString]?.[player.id];
+            const playerAvailability = playerData?.available;
 
             if (playerAvailability === true) {
-
-                dot.style.background =
-                    player.color;
-
+                dot.style.background = player.color;
                 availableCount++;
-
             } else if (playerAvailability === false) {
-
-                dot.style.background =
-                    "#ef4444";
-
+                dot.style.background = "#ef4444";
             } else {
-
-                dot.style.background =
-                    "#6b7280";
-
+                dot.style.background = "#6b7280";
             }
 
+            const statusText =
+                playerAvailability === true ? "Disponible" :
+                playerAvailability === false ? "No disponible" :
+                "Sin responder";
 
-            dot.title =
-                player.name +
-                ": " +
-                (
-                    playerAvailability === true
-                        ? "Disponible"
-                        : playerAvailability === false
-                            ? "No disponible"
-                            : "Sin responder"
-                );
+            dot.title = player.name + ": " + statusText;
 
+            if (playerData?.note) {
+                dot.title += "\nAnotación: " + playerData.note;
+                dot.classList.add("has-note");
+            }
 
             playersContainer.appendChild(dot);
-
         });
-
 
         dayElement.appendChild(playersContainer);
 
-
-        const count =
-            document.createElement("div");
-
-        count.className =
-            "availability-count";
-
-        count.textContent =
-            `${availableCount}/${players.length} disponibles`;
-
+        const count = document.createElement("div");
+        count.className = "availability-count";
+        count.textContent = `${availableCount}/${players.length} disponibles`;
         dayElement.appendChild(count);
 
-
-        // Destacar si TODOS pueden
-
-        if (
-            players.length > 0 &&
-            availableCount === players.length
-        ) {
-            dayElement.style.border =
-                "2px solid #22c55e";
+        if (players.length > 0 && availableCount === players.length) {
+            dayElement.style.border = "2px solid #22c55e";
         }
 
-
-        dayElement.addEventListener(
-            "click",
-            () => toggleAvailability(dateString)
-        );
-
+        dayElement.addEventListener("click", () => {
+            openAvailability(dateString);
+        });
 
         calendarDays.appendChild(dayElement);
-
     }
-
 }
 
-
-// ===============================
-// CAMBIAR DISPONIBILIDAD
-// ===============================
-
-async function toggleAvailability(date) {
-
-    const playerId =
-        playerSelect.value;
+// Abrir ventana de disponibilidad
+function openAvailability(date) {
+    const playerId = playerSelect.value;
 
     if (!playerId) {
-
-        showMessage(
-            "Primero selecciona tu nombre."
-        );
-
+        showMessage("Primero selecciona tu nombre.");
         return;
     }
 
-
-    const current =
-        availability[date]?.[playerId];
-
-
-    // Si no está marcado o está en no disponible
-    // → disponible
-
-    // Si está disponible
-    // → no disponible
-
-    const newValue =
-        current === true
-            ? false
-            : true;
-
-
-    const { error } =
-        await supabaseClient
-            .from("availability")
-            .upsert(
-                {
-                    player_id: playerId,
-                    date: date,
-                    available: newValue
-                },
-                {
-                    onConflict:
-                        "player_id,date"
-                }
-            );
-
-
-    if (error) {
-
-        console.error(error);
-
-        showMessage(
-            "No se ha podido guardar el cambio."
-        );
-
+    if (!dialog || !statusInput || !noteInput) {
+        showMessage("Falta la ventana de disponibilidad en index.html.");
         return;
     }
 
+    selectedDate = date;
+    const playerData = availability[date]?.[playerId];
 
-    if (!availability[date]) {
-        availability[date] = {};
-    }
+    dialogDate.textContent = "Disponibilidad: " + date;
 
-    availability[date][playerId] =
-        newValue;
+    statusInput.value =
+        playerData?.available === true ? "true" :
+        playerData?.available === false ? "false" : "null";
 
-
-    renderCalendar();
-
+    noteInput.value = playerData?.note || "";
+    dialog.showModal();
 }
 
+// Guardar disponibilidad y anotación
+async function saveAvailability() {
+    const playerId = playerSelect.value;
 
-// ===============================
-// CAMBIAR DE MES
-// ===============================
-
-document
-    .getElementById("previousMonth")
-    .addEventListener("click", async () => {
-
-        currentDate.setMonth(
-            currentDate.getMonth() - 1
-        );
-
-        await loadAvailability();
-
-    });
-
-
-document
-    .getElementById("nextMonth")
-    .addEventListener("click", async () => {
-
-        currentDate.setMonth(
-            currentDate.getMonth() + 1
-        );
-
-        await loadAvailability();
-
-    });
-
-
-// ===============================
-// CAMBIAR JUGADOR
-// ===============================
-
-playerSelect.addEventListener(
-    "change",
-    () => {
-
-        message.textContent = "";
-
-        renderCalendar();
-
+    if (!playerId || !selectedDate) {
+        showMessage("Selecciona tu nombre y un día.");
+        return;
     }
-);
 
+    const available =
+        statusInput.value === "null" ? null :
+        statusInput.value === "true";
 
-// ===============================
-// ACTUALIZAR AUTOMÁTICAMENTE
-// ===============================
+    const note = noteInput.value.trim();
 
+    saveButton.disabled = true;
+
+    const { error } = await supabaseClient
+        .from("availability")
+        .upsert({
+            player_id: playerId,
+            date: selectedDate,
+            available: available,
+            note: note
+        }, {
+            onConflict: "player_id,date"
+        });
+
+    saveButton.disabled = false;
+
+    if (error) {
+        console.error(error);
+        showMessage("No se ha podido guardar el cambio.");
+        return;
+    }
+
+    if (!availability[selectedDate]) {
+        availability[selectedDate] = {};
+    }
+
+    availability[selectedDate][playerId] = {
+        available: available,
+        note: note
+    };
+
+    dialog.close();
+    renderCalendar();
+    showMessage("Disponibilidad guardada.");
+}
+
+// Botones de la ventana
+if (saveButton) {
+    saveButton.addEventListener("click", saveAvailability);
+}
+
+if (cancelButton) {
+    cancelButton.addEventListener("click", () => dialog.close());
+}
+
+// Cambiar de mes
+document.getElementById("previousMonth").addEventListener("click", async () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    await loadAvailability();
+});
+
+document.getElementById("nextMonth").addEventListener("click", async () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    await loadAvailability();
+});
+
+// Cambiar jugador
+playerSelect.addEventListener("change", () => {
+    message.textContent = "";
+    renderCalendar();
+});
+
+// Actualizar automáticamente desde Supabase
 supabaseClient
     .channel("availability-changes")
-
     .on(
         "postgres_changes",
         {
@@ -409,54 +294,28 @@ supabaseClient
             table: "availability"
         },
         () => {
-
             loadAvailability();
-
         }
     )
-
     .subscribe();
 
-
-// ===============================
-// FUNCIONES AUXILIARES
-// ===============================
-
+// Funciones auxiliares
 function formatDate(date) {
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
 
-
 function showMessage(text) {
-
     message.textContent = text;
 
     setTimeout(() => {
-
         message.textContent = "";
-
     }, 3000);
-
 }
 
-
-// ===============================
-// INICIAR
-// ===============================
-
+// Iniciar aplicación
 loadPlayers();
 loadAvailability();
