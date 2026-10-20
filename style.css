@@ -177,3 +177,66 @@ select {
         font-size: 10px;
     }
 }
+
+#availabilityDialog {
+    background: #1f2937;
+    color: white;
+    border: 1px solid #374151;
+    border-radius: 14px;
+    padding: 25px;
+    width: min(90%, 400px);
+}
+
+#availabilityDialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+#availabilityDialog h3 {
+    margin-top: 0;
+}
+
+#availabilityDialog label {
+    display: block;
+    margin: 15px 0 8px;
+}
+
+#availabilityDialog select,
+#availabilityDialog textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #4b5563;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font: inherit;
+}
+
+#availabilityDialog textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dialog-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#saveAvailability {
+    background: #22c55e;
+    color: #111827;
+    font-weight: bold;
+}
+
+#cancelAvailability {
+    background: #374151;
+    color: white;
+}
