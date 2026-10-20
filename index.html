@@ -72,6 +72,28 @@
 
     </main>
 
+
+<dialog id="availabilityDialog">
+    <h3 id="dialogDate"></h3>
+
+    <label for="availabilityStatus">Disponibilidad</label>
+    <select id="availabilityStatus">
+        <option value="true">Disponible</option>
+        <option value="false">No disponible</option>
+        <option value="null">Sin responder / No lo sé</option>
+    </select>
+
+    <label for="availabilityNote">Anotaciones</label>
+    <textarea id="availabilityNote"
+        maxlength="500"
+        placeholder="Escribe una anotación..."></textarea>
+
+    <div class="dialog-actions">
+        <button id="cancelAvailability">Cancelar</button>
+        <button id="saveAvailability">Guardar</button>
+    </div>
+</dialog>
+    
     <script src="app.js"></script>
 
 </body>
