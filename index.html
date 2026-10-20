@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de partidas</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h1>🎲 Calendario de partidas</h1>
+    </header>
+
+    <main>
+        <section class="player-selection">
+            <label for="player">¿Quién eres?</label>
+            <select id="player">
+                <option value="">Selecciona tu nombre</option>
+            </select>
+        </section>
+
+        <section class="calendar">
+            <div class="calendar-navigation">
+                <button id="previousMonth" aria-label="Mes anterior">❮</button>
+                <h2 id="monthTitle"></h2>
+                <button id="nextMonth" aria-label="Mes siguiente">❯</button>
+            </div>
+
+            <div class="weekdays">
+                <div>L</div>
+                <div>M</div>
+                <div>X</div>
+                <div>J</div>
+                <div>V</div>
+                <div>S</div>
+                <div>D</div>
+            </div>
+
+            <div id="calendarDays" class="calendar-days"></div>
+        </section>
+
+        <section class="legend">
+            <span><i class="legend-dot available"></i>Disponible</span>
+            <span><i class="legend-dot unavailable"></i>No disponible</span>
+            <span><i class="legend-dot pending"></i>Sin responder</span>
+        </section>
+
+        <p id="message" role="status"></p>
+    </main>
+
+    <dialog id="availabilityDialog">
+        <h2 id="dialogDate">Disponibilidad</h2>
+
+        <section class="edit-availability">
+            <label for="availabilityStatus">Tu disponibilidad</label>
+
+            <select id="availabilityStatus">
+                <option value="true">Disponible</option>
+                <option value="false">No disponible</option>
+                <option value="null">Sin responder / No lo sé</option>
+            </select>
+
+            <label for="availabilityNote">Tu anotación</label>
+
+            <textarea
+                id="availabilityNote"
+                maxlength="500"
+                rows="3"
+                placeholder="Ej.: Solo puedo jugar por la tarde..."
+            ></textarea>
+        </section>
+
+        <div class="dialog-actions">
+            <button id="cancelAvailability" type="button">Cancelar</button>
+            <button id="saveAvailability" type="button">Guardar</button>
+        </div>
+
+        <hr>
+
+        <h3>Respuestas del grupo</h3>
+
+        <div id="otherResponses">
+            <p>Cargando respuestas...</p>
+        </div>
+    </dialog>
+
+</body>
+</html>
