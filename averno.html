@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendario D&D Averno</title>
+<link rel="stylesheet" href="./style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app-averno.js" defer></script>
+</head>
+<body>
+<header><h1> Calendario D&D Averno</h1></header>
+<main>
+<section class="player-selection"><label for="player">¿Quién eres?</label><select id="player"><option value="">Selecciona tu nombre</option></select></section>
+<nav class="tabs"><button class="tab-button active" data-tab="calendarPanel">Calendario</button><button class="tab-button" data-tab="pollsPanel">Votaciones</button></nav>
+<section id="calendarPanel" class="tab-panel">
+<div class="calendar"><div class="calendar-navigation"><button id="previousMonth">❮</button><h2 id="monthTitle"></h2><button id="nextMonth">❯</button></div>
+<div class="weekdays"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div><div id="calendarDays" class="calendar-days"></div></div>
+<section class="legend"><span><i class="legend-dot available"></i>Disponible</span><span><i class="legend-dot unavailable"></i>No disponible</span><span><i class="legend-dot pending"></i>Sin responder</span></section></section>
+<section id="pollsPanel" class="tab-panel hidden">
+<div class="section-heading"><div><h2>Votaciones de eventos</h2><p class="muted"></p></div><button id="masterPanelToggle">Panel del Máster</button></div>
+<section id="masterPanel" class="panel hidden"><h3>Crear votación</h3><p class="muted"></p>
+<form id="createPollForm">
+<label for="masterPassword">Contraseña del Máster</label><input id="masterPassword" type="password" required>
+<label for="pollTitle">Título</label><input id="pollTitle" maxlength="120" required>
+<label for="pollDescription">Descripción</label><textarea id="pollDescription" rows="2"></textarea>
+<label for="pollClosesAt">Fecha límite (opcional)</label><input id="pollClosesAt" type="datetime-local">
+<label for="pollOptions">Opciones (una por línea, mínimo dos)</label><textarea id="pollOptions" rows="4" required placeholder="Mazmorra&#10;Misterio&#10;Aventura de una sesión"></textarea><button type="submit">Crear votación</button>
+</form></section><div id="pollMessage" class="message" role="status"></div><div id="pollList" class="poll-list">Cargando votaciones...</div>
+</section><p id="message" role="status"></p>
+</main>
+<dialog id="availabilityDialog"><h2 id="dialogDate">Disponibilidad</h2><label for="availabilityStatus">Tu disponibilidad</label><select id="availabilityStatus"><option value="true">Disponible</option><option value="false">No disponible</option><option value="null">Sin responder / No lo sé</option></select><label for="availabilityNote">Tu anotación</label><textarea id="availabilityNote" maxlength="500" rows="3"></textarea><div class="dialog-actions"><button id="cancelAvailability">Cancelar</button><button id="saveAvailability">Guardar</button></div><hr><h3>Respuestas del grupo</h3><div id="otherResponses"></div></dialog>
+</body></html>
